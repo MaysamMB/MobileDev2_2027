@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, Text, Button } from 'react-native';
+import { StyleSheet, View, TextInput, Text, Button, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import rideRequestSchema from '../../utils/schemas/rideRequest'
 
@@ -28,8 +28,22 @@ const RequestForm = () => {
 
   return (
     <View>
-      <Text style={{ fontSize: 25, color: '#f5d142', fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>Request a Taxi</Text>
+      <Text
+        accessible={true}
+        accessibilityLabel="Fill this form to request a taxi"
+        accessibilityRole="header"
+        style={{
+          fontSize: 25,
+          color: '#f5d142',
+          fontWeight: 'bold',
+          marginBottom: 10,
+          textAlign: 'center'
+        }}>
+        Request a Taxi
+      </Text>
       <TextInput
+        accessible={true}   // this is true by default
+        accessibilityLabel="Enter your name here"
         style={styles.input}
         placeholder="Your Name"
         keyboardType="default"
@@ -49,16 +63,30 @@ const RequestForm = () => {
       />
       <TextInput
         style={styles.input}
+        accessibilityLabel="Number of Passengers"
+        accessibilityHint="It should be more than 0 and less than 7 passengers"
+        disabled={!form.destination.length}
+        accessibilityState={{ disabled: !form.destination.length }}
         placeholder="Number of Passengers"
         keyboardType="numeric"
         onChangeText={(v) => handleFormChange('passengers', parseInt(v))}
+
       />
-      <Button title="Submit" onPress={submit} />
+      <Button
+        title="Submit"
+        onPress={submit}
+      />
       <View>
         {errors.map((err) => (
           <Text style={styles.errors}>- {err}</Text>
         ))}
       </View>
+
+      <TouchableOpacity style={{ width: 100, height: 24, backgroundColor: "#A80000" }} >
+        <Text style={{ color: "#ECF6FD" }}>
+          Click Me
+        </Text>
+      </TouchableOpacity>
 
       <View style={{ marginTop: 20 }}>
         <Text>Data Summary:</Text>
