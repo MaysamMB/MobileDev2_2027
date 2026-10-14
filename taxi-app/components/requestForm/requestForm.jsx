@@ -1,6 +1,8 @@
 import { StyleSheet, View, TextInput, Text, Button, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-import rideRequestSchema from '../../utils/schemas/rideRequest'
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+
+import rideRequestSchema from '../../utils/schemas/rideRequest';
 
 const RequestForm = () => {
   const [form, setForm] = useState({
@@ -8,7 +10,9 @@ const RequestForm = () => {
     location: '',
     destination: '',
     passengers: 0,
+    date: new Date()
   });
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const [errors, setErrors] = useState([]);
 
@@ -70,8 +74,32 @@ const RequestForm = () => {
         placeholder="Number of Passengers"
         keyboardType="numeric"
         onChangeText={(v) => handleFormChange('passengers', parseInt(v))}
-
       />
+      
+      <TouchableOpacity 
+        style={{ width: 100, height: 24, backgroundColor: "#A80000" }} 
+        onPress={()=>{
+          setShowTimePicker(true)
+        }}
+      >
+        <Text style={{ color: "#ECF6FD" }}>
+          Pick a date/time
+        </Text>
+      </TouchableOpacity>
+      
+      {showTimePicker && (      
+        <RNDateTimePicker
+          value={new Date()}
+          mode="date"
+          display="default"
+          minimumDate={new Date()}
+          maximumDate={(new Date()).setDate(new Date().getDate() + 30)}
+          onChange={(_, selected) => {
+            setShowTimePicker(false);
+            handleFormChange('date',selected)
+          }}
+        />
+      )}
       <Button
         title="Submit"
         onPress={submit}
@@ -82,18 +110,13 @@ const RequestForm = () => {
         ))}
       </View>
 
-      <TouchableOpacity style={{ width: 100, height: 24, backgroundColor: "#A80000" }} >
-        <Text style={{ color: "#ECF6FD" }}>
-          Click Me
-        </Text>
-      </TouchableOpacity>
-
       <View style={{ marginTop: 20 }}>
         <Text>Data Summary:</Text>
         <Text>Name: {form.name}</Text>
         <Text>Your Location: {form.location}</Text>
         <Text>Your Destination: {form.destination}</Text>
         <Text>Number of Passengers: {form.passengers}</Text>
+        <Text>Date: {form.date.toDateString()}</Text>
       </View>
     </View>
   );
