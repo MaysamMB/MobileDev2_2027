@@ -1,6 +1,7 @@
 import { StyleSheet, View, TextInput, Text, Button, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import RadioGroup from '../common/RadioGroup.jsx'
 
 import rideRequestSchema from '../../utils/schemas/rideRequest';
 
@@ -10,7 +11,9 @@ const RequestForm = () => {
     location: '',
     destination: '',
     passengers: 0,
-    date: new Date()
+    date: new Date(),
+    lugge:'',
+    gender:''
   });
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -100,6 +103,14 @@ const RequestForm = () => {
           }}
         />
       )}
+      <RadioGroup 
+        options={['Has luggage','No luggage']}
+        onOptionSelected={(v) => handleFormChange('lugge', v)}
+      />
+      <RadioGroup 
+        options={['Male','Female']}
+        onOptionSelected={(v) => handleFormChange('gender', v)}
+      />
       <Button
         title="Submit"
         onPress={submit}
@@ -117,6 +128,8 @@ const RequestForm = () => {
         <Text>Your Destination: {form.destination}</Text>
         <Text>Number of Passengers: {form.passengers}</Text>
         <Text>Date: {form.date.toDateString()}</Text>
+        <Text>Lugge: {form.lugge}</Text>
+        <Text>Gender: {form.gender}</Text>
       </View>
     </View>
   );
