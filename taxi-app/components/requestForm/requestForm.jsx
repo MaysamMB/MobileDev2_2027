@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, Text, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, TextInput, Text, Button, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from '../common/RadioGroup.jsx'
@@ -34,7 +34,7 @@ const RequestForm = () => {
   };
 
   return (
-    <View>
+    <ScrollView>
       <Text
         accessible={true}
         accessibilityLabel="Fill this form to request a taxi"
@@ -96,10 +96,10 @@ const RequestForm = () => {
           mode="date"
           display="default"
           minimumDate={new Date()}
-          maximumDate={(new Date()).setDate(new Date().getDate() + 30)}
+          maximumDate={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
           onChange={(_, selected) => {
             setShowTimePicker(false);
-            handleFormChange('date',selected)
+            if (selected) handleFormChange('date', selected);
           }}
         />
       )}
@@ -116,8 +116,8 @@ const RequestForm = () => {
         onPress={submit}
       />
       <View>
-        {errors.map((err) => (
-          <Text style={styles.errors}>- {err}</Text>
+        {errors.map((err, i) => (
+          <Text key={i} style={styles.errors}>- {err}</Text>
         ))}
       </View>
 
@@ -131,7 +131,7 @@ const RequestForm = () => {
         <Text>Lugge: {form.lugge}</Text>
         <Text>Gender: {form.gender}</Text>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

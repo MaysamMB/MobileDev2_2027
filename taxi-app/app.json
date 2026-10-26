@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "taxi-app",
-    "slug": "snack-8e981bbe-0635-41ee-a46a-ad0dd6282c4f",
+    "slug": "snack-0cfcf9ab-57da-4377-b23c-5d5328727709",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,6 +24,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
