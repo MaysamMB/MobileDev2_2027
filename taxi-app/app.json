@@ -3,6 +3,7 @@
     "name": "taxi-app",
     "slug": "snack-8e981bbe-0635-41ee-a46a-ad0dd6282c4f",
     "version": "1.0.0",
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
