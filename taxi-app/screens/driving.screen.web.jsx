@@ -8,6 +8,7 @@ const DrivingScreen = () => {
       <Text style={styles.message}>
         Map view is available in the mobile app.
       </Text>
+      
     </View>
   );
 };

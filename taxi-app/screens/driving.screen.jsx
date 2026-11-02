@@ -1,9 +1,13 @@
 
 import React from 'react';
+import {useRoute} from '@react-navigation/native';
 import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 const DrivingScreen = () => {
+  const route = useRoute();
+  const { data } = route.params.data;
+
   return (
     <View style={[styles.container]}>
       {/* <Text style={[styles.title]}>Driving Map</Text> */}

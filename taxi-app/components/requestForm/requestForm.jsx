@@ -5,7 +5,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from '../common/RadioGroup.jsx'
 import rideRequestSchema from '../../utils/schemas/rideRequest';
 
-const RequestForm = () => {
+const RequestForm = (props) => {
   const [form, setForm] = useState({
     name: '',
     location: '',
@@ -27,6 +27,7 @@ const RequestForm = () => {
     setErrors([]);
     rideRequestSchema.validate(form, { abortEarly: false }).then(value => {
       console.log(value);
+      props.onsubmit(value);
     })
       .catch(error => {
         setErrors(error.errors)
