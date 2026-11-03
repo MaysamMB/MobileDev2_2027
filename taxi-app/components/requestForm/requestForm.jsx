@@ -12,7 +12,7 @@ const RequestForm = (props) => {
     destination: '',
     passengers: 0,
     date: new Date(),
-    lugge:'',
+    c:'',
     gender:''
   });
   const [showTimePicker, setShowTimePicker] = useState(false);

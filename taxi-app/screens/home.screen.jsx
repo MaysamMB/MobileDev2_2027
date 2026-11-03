@@ -68,7 +68,7 @@ const HomeScreen = () => {
         />
 
         <Tab.Screen
-          name="about"
+          name="account"
           component={MyAccount}
           options={{
             title: "My Account",
