@@ -1,15 +1,44 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useEffect, useState } from 'react';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
+let db;
 
 const RequestsListScreen = () => {
   const [requestsList, setRequestsList] = useState([]);
 
-  useEffect(() => {
-    const db = SQLite.openDatabaseSync('taxi-app');
+  const readRequests = () => {
     const results = db.getAllSync('SELECT * FROM requests');
     setRequestsList(results);
+  }
+
+  const deleteRequest = (id) => {
+    const res = db.runSync("DELETE FROM requests WHERE id = $id", { $id: id });
+    // const res = db.runSync("DELETE FROM requests WHERE id = ?", id);
+    if (res.changes > 0) {
+      readRequests();
+      Alert.alert("Delete Success");
+    }
+  }
+
+  useEffect(() => {
+    db = SQLite.openDatabaseSync('taxi-app');
+    readRequests();
   }, []);
+
+  const handleDelete = (id) => {
+    Alert.alert("Confirm", "Are you sure you want to delete request: " + id, [
+      {
+        text: 'No',
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => deleteRequest(id)
+      },
+    ]);
+  }
 
   return (
     <View style={styles.container}>
@@ -18,7 +47,7 @@ const RequestsListScreen = () => {
       <ScrollView contentContainerStyle={styles.list}>
         {requestsList.map((r) => (
           <View key={r.id} style={styles.card}>
-            <Text style={styles.name}>{r.name}</Text>
+            <Text style={styles.name}>{r.id} | {r.name}</Text>
 
             <View style={styles.row}>
               <Text style={styles.label}>Location:</Text>
@@ -46,6 +75,9 @@ const RequestsListScreen = () => {
               <Text style={styles.label}>Luggage:</Text>
               <Text style={styles.value}>{r.luggage ? 'Yes' : 'No'}</Text>
             </View>
+            <Pressable onPress={() => handleDelete(r.id)}>
+              <MaterialCommunityIcons name="trash-can-outline" size={30} color='#ff2525' />
+            </Pressable>
           </View>
         ))}
       </ScrollView>

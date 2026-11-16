@@ -1,4 +1,4 @@
-import { StyleSheet, View, ScrollView, TextInput, Text, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, TextInput, Text, Button, TouchableOpacity, Alert } from 'react-native';
 import { useState } from 'react';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from '../common/RadioGroup.jsx'
@@ -6,6 +6,7 @@ import RadioGroup from '../common/RadioGroup.jsx'
 import rideRequestSchema from '../../utils/schemas/rideRequest';
 
 const INIT_FORM = {
+  id: null,
   name: '',
   location: '',
   destination: '',
@@ -25,15 +26,47 @@ const RequestForm = (props) => {
     setForm({ ...form, [field]: v });
   };
 
+  // keep id as a number, or null when the field is empty
+  const handleIdChange = (v) => {
+    const digits = v.replace(/[^0-9]/g, '');
+    handleFormChange('id', digits === '' ? null : parseInt(digits));
+  };
+
   const submit = () => {
     setErrors([]);
     rideRequestSchema.validate(form, { abortEarly: false }).then(data => {
       props.onSubmit(data);
       setForm(INIT_FORM);
     }).catch(error => {
+      console.log(error);
       setErrors(error.errors)
     })
   };
+
+  const handleEdit = () => {
+    if (form.id === null) {
+      Alert.alert("Please enter a request ID first");
+      return;
+    }
+
+    const data = props.db.getFirstSync("SELECT * FROM requests WHERE id=?", form.id);
+
+    if (!data) {
+      Alert.alert("Item Not found!");
+    } else {
+      setForm({
+        id: data.id,
+        name: data.name,
+        location: data.loc,
+        destination: data.dest,
+        passengers: data.pass,
+        // the date is saved in seconds, JS needs milliseconds
+        date: new Date(data.date * 1000),
+        lugge: data.luggage === 1 ? 'Has luggage' : 'No luggage',
+        gender: data.gender
+      });
+    }
+  }
 
   return (
     <ScrollView>
@@ -50,6 +83,23 @@ const RequestForm = (props) => {
         }}>
         Request a Taxi
       </Text>
+      <View style={styles.editRow}>
+        <TextInput
+          style={[styles.input, styles.editInput]}
+          placeholder="Request ID (for editing)"
+          keyboardType="number-pad"
+          value={form.id === null ? '' : String(form.id)}
+          onChangeText={handleIdChange}
+        />
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={handleEdit}
+          accessibilityRole="button"
+          accessibilityLabel="Load request for editing"
+        >
+          <Text style={styles.editButtonText}>Edit</Text>
+        </TouchableOpacity>
+      </View>
       <TextInput
         accessible={true}   // this is true by default
         accessibilityLabel="Enter your name here"
@@ -82,7 +132,7 @@ const RequestForm = (props) => {
         placeholder="Number of Passengers"
         keyboardType="numeric"
         value={form.passengers.toString()}
-        onChangeText={(v) => handleFormChange('passengers', parseInt(v))}
+        onChangeText={(v) => handleFormChange('passengers', parseInt(v) || 0)}
       />
 
       <TouchableOpacity
@@ -98,7 +148,7 @@ const RequestForm = (props) => {
 
       {showTimePicker && (
         <RNDateTimePicker
-          value={new Date(form.date)}
+          value={form.date}
           mode="date"
           display="default"
           minimumDate={new Date()}
@@ -111,10 +161,12 @@ const RequestForm = (props) => {
       )}
       <RadioGroup
         options={['Has luggage', 'No luggage']}
+        value={form.lugge}
         onOptionSelected={(v) => handleFormChange('lugge', v)}
       />
       <RadioGroup
         options={['Male', 'Female']}
+        value={form.gender}
         onOptionSelected={(v) => handleFormChange('gender', v)}
       />
       <Button
@@ -150,6 +202,28 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  editRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginBottom: 10,
+  },
+  editInput: {
+    flex: 1,          // the input takes the free space
+    marginBottom: 0,  // the row already has the bottom margin
+    marginRight: 8,
+  },
+  editButton: {
+    backgroundColor: '#f5d142',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#222222',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   errors: {
     fontSize: 10,
