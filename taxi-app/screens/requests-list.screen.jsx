@@ -1,21 +1,17 @@
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
-import * as SQLite from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
-let db;
+import { getAllRequests, deleteRequest as removeRequest } from '../utils/db';
 
 const RequestsListScreen = () => {
   const [requestsList, setRequestsList] = useState([]);
 
   const readRequests = () => {
-    const results = db.getAllSync('SELECT * FROM requests');
-    setRequestsList(results);
+    setRequestsList(getAllRequests());
   }
 
   const deleteRequest = (id) => {
-    const res = db.runSync("DELETE FROM requests WHERE id = $id", { $id: id });
-    // const res = db.runSync("DELETE FROM requests WHERE id = ?", id);
+    const res = removeRequest(id);
     if (res.changes > 0) {
       readRequests();
       Alert.alert("Delete Success");
@@ -23,7 +19,6 @@ const RequestsListScreen = () => {
   }
 
   useEffect(() => {
-    db = SQLite.openDatabaseSync('taxi-app');
     readRequests();
   }, []);
 

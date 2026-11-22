@@ -4,6 +4,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from '../common/RadioGroup.jsx'
 
 import rideRequestSchema from '../../utils/schemas/rideRequest';
+import { getRequestById } from '../../utils/db';
 
 const INIT_FORM = {
   id: null,
@@ -49,7 +50,7 @@ const RequestForm = (props) => {
       return;
     }
 
-    const data = props.db.getFirstSync("SELECT * FROM requests WHERE id=?", form.id);
+    const data = getRequestById(form.id);
 
     if (!data) {
       Alert.alert("Item Not found!");
